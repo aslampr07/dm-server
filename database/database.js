@@ -1,7 +1,6 @@
 const mysql = require('mysql');
 const fs = require('fs')
 
-console.log(__dirname);
 
 const data = fs.readFileSync(__dirname+"/../config/database.json");
 let cred = JSON.parse(data)
