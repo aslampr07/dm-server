@@ -1,5 +1,8 @@
 const express = require('express');
 
+const pool = require('../database/database').pool;
+const mysql = require('mysql');
+
 const router = express.Router()
 
 router.post("/register", function (req, res) {
@@ -30,14 +33,5 @@ router.post("/register", function (req, res) {
     }
 
 });
-
-function validateResponse(phone, cb) {
-    if (!/^\+91[0-9]{10}^/.test(phone)) {
-        cb(false)
-    }
-    else {
-        cb(true)
-    }
-}
 
 module.exports = router;
