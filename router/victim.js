@@ -88,7 +88,6 @@ router.get("/request/expand", (req, res) => {
     let phone = req.query.phone
 
     let sql = mysql.format("SELECT * FROM Victim_Request WHERE phone = ?", [phone]);
-    console.log(sql);
     pool.query(sql, (err, rows) => {
         if(err){
             throw err
@@ -109,6 +108,29 @@ router.get("/request/expand", (req, res) => {
             res.json(response);
         }
     });
+});
+
+route.post("/request/accept", (req, res) => {
+    let volPhone = req.body.volPhone;
+    let vicPhone = req.body.vicPhone;
+
+    let sql = mysql.format("SELECT ID FROM Volunteer WHERE phone = ?", [volPhone]);
+    pool.query(sql, (err, rows) => {
+        if(err){
+            throw err
+        }
+        if(rows.length > 0){
+            let sql = mysql.format("SELECT ID FROM Victim_Request WHERE phone = ?", [vicPhone]);
+            
+        }
+        else{
+            let response = {
+                "success": false,
+                "type": 103
+            }
+        }
+    });
+
 });
 
 module.exports = router
