@@ -103,16 +103,16 @@ router.get("/request/expand", (req, res) => {
         else{
             let response = {
                 "success" : false,
-                "type" : 101
+                "type" : 102
             }
             res.json(response);
         }
     });
 });
 
-route.post("/request/accept", (req, res) => {
-    let volPhone = req.body.volPhone;
-    let vicPhone = req.body.vicPhone;
+router.post("/request/accept", (req, res) => {
+    let volPhone = req.body.volphone;
+    let vicPhone = req.body.vicphone;
 
     let sql = mysql.format("SELECT ID FROM Volunteer WHERE phone = ?", [volPhone]);
     pool.query(sql, (err, rows) => {
@@ -120,14 +120,44 @@ route.post("/request/accept", (req, res) => {
             throw err
         }
         if(rows.length > 0){
+            console.log("Volunteer Number is OK")
+            let volId = rows[0].ID
             let sql = mysql.format("SELECT ID FROM Victim_Request WHERE phone = ?", [vicPhone]);
-            
+            pool.query(sql, (err, rows) => {
+                if(err){
+                    throw err;
+                }
+                if(rows.length > 0){
+                    console.log("Victim Number is OK")
+                    let vicId = rows[0].ID
+                    let sql = mysql.format("INSERT INTO Request_Accepted(requestID, volunteerID, acceptedTime) VALUES (?, ?, NOW())", [vicId, volId]);
+                    pool.query(sql, (err, rows) => {
+                        if(err){
+                            throw err;
+                        }
+                        let response = {
+                            "success" : true,
+                        }
+                        res.json(response);
+                    }); 
+                }
+                else{
+                    console.log("Victim number is not found")
+                    let response = {
+                        "success" : false,
+                        "type" : 104
+                    }
+                    res.json(response);
+                }
+            })
         }
         else{
+            console.log("Victim number is not found");
             let response = {
                 "success": false,
                 "type": 103
             }
+            res.json(response)
         }
     });
 
