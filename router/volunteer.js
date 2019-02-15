@@ -12,7 +12,10 @@ router.post("/register", function (req, res) {
     let lon = Number(req.body.lon);
 
     if (/^\+91[0-9]{10}$/.test(phone)) {
-        let sql = mysql.format("INSERT INTO Volunteer(name, phone, latitude, longitude, creationTime) VALUES (?, ?, ?, ?, NOW() )", [name, phone, lat, lon]);
+        let sql = mysql.format(`INSERT INTO Volunteer(name, phone, latitude, longitude, creationTime) VALUES (?, ?, ?, ?, NOW()) 
+                                                ON DUPLICATE KEY UPDATE
+                                                name = ?, phone = ?, latitude = ?, longitude = ?, creationTime = NOW()`, 
+                                                [name, phone, lat, lon, name, phone, lat, lon]);
         pool.query(sql, function (err, rows) {
             if (err) {
                 throw err;

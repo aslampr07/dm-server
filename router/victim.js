@@ -15,7 +15,9 @@ router.post("/ticket/create", (req, res) => {
 
     if (/^\+91[0-9]{10}$/.test(phone)) {
         let sql = mysql.format(`INSERT INTO Victim_Request(name, phone, location, latitude, longitude, requestTime)
-                                         VALUES (?, ?, ?, ?, ?, NOW())`, [name, phone, location, latitude, longitude]);
+                                         VALUES (?, ?, ?, ?, ?, NOW()) ON DUPLICATE KEY UPDATE 
+                                         name = ?, location = ?, latitude = ?, longitude = ?, requestTime = NOW()`, 
+                                         [name, phone, location, latitude, longitude, name, location, latitude, longitude]);
 
         pool.query(sql, (err, rows) => {
             if (err) {
@@ -94,6 +96,9 @@ router.get("/request/expand", (req, res) => {
         }
         if(rows.length > 0){
             delete rows[0].ID
+            let date = new Date(rows[0].requestTime);
+            rows[0].requestTime = date.getTime();
+
             let response = {
                 "success" : true,
                 "result" : rows[0]
@@ -160,7 +165,6 @@ router.post("/request/accept", (req, res) => {
             res.json(response)
         }
     });
-
 });
 
 module.exports = router
