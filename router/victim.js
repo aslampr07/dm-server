@@ -7,7 +7,7 @@ const moment = require('moment')
 const router = express.Router();
 
 router.post("/ticket/create", (req, res) => {
-    let name = req.body.name;
+    let name = String(req.body.name).trim()
     let phone = req.body.phone;
     let location = req.body.location;
     let latitude = req.body.lat;
