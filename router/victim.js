@@ -71,7 +71,9 @@ router.get("/requests", (req, res) => {
         })
     }
     else {
+        //For desktop client;
         let sql = mysql.format("SELECT name, phone, location, latitude, longitude, requestTime FROM Victim_Request ORDER BY requestTime LIMIT ?", [limit]);
+        console.log(sql);
         pool.query(sql, function (err, rows) {
             if (err) {
                 throw err;
@@ -165,6 +167,32 @@ router.post("/request/accept", (req, res) => {
             res.json(response)
         }
     });
+});
+
+
+router.post("/p2prequests", (req, res) => {
+    let requests = req.body
+
+    let data = []
+    for(let i = 0; i < requests.length; i++){
+        let item = [requests[i].name, requests[i].phone, requests[i].place, requests[i].latitude, requests[i].longitude, requests[i].creationTime];
+        data.push(item)
+    }
+    console.log(data);
+
+    let sql = mysql.format("INSERT IGNORE INTO Victim_Request(name, phone, location, latitude, longitude, requestTime) VALUES ?", [data])
+
+    console.log(sql);
+
+    pool.query(sql, (err, rows) => {
+        if(err) throw err;
+    
+        let response = {
+            "success": true
+        }
+        res.json(response);
+    });
+    
 });
 
 module.exports = router
