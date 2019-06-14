@@ -37,5 +37,27 @@ router.post("/register", function (req, res) {
 
 });
 
+router.get("/list",(req,res)=>{
+    let sql= "select Volunteer.name as volname , Volunteer.phone as volphone , Victim_Request.name as vicname , Victim_Request.location , Victim_Request.phone as viphone  from Volunteer , Victim_Request , Request_Accepted where Volunteer.ID = Request_Accepted.volunteerID and Victim_Request.ID = Request_Accepted.requestID"
+    pool.query(sql,(err,rows)=>{
+        if (err){
+            throw err;
+        }
+        let selectReq = rows
+        let sql = "select name, phone  from Volunteer"
+        pool.query(sql,(err,rows)=>{
+            if (err){
+                throw err;
+            }
+            let response = {
+                "success": true,
+                "selectReq": selectReq,
+                "allReq": rows
+            }
+            res.json(response);
+        })
+    })
+} )
+
 
 module.exports = router;

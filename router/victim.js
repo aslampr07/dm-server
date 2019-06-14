@@ -169,6 +169,38 @@ router.post("/request/accept", (req, res) => {
     });
 });
 
+router.delete("/remove", (req, res)=>{
+    let vicPhone = req.query.vicphone;
+    let volPhone = req.query.volphone;
+
+    let sql = mysql.format("delete from Request_Accepted where Request_Accepted.requestID = (select Victim_Request.ID from Victim_Request where Victim_Request.phone = ? ) and Request_Accepted.volunteerID = (select Volunteer.ID from Volunteer where Volunteer.phone = ?)",[vicPhone,volPhone])
+    pool.query(sql, (err, rows)=>{
+        if(err){
+            throw err;
+        }
+    
+        let response = {
+            "success": true
+        }
+        res.json(response)
+    })
+})
+
+router.delete("/delete", (req, res) => {
+    let phone = req.query.phone;
+
+    let sql = mysql.format("DELETE FROM Victim_Request WHERE phone = ?", [phone]);
+
+    pool.query(sql, (err, rows) => {
+        if(err){
+            throw err;
+        }
+        let response = {
+            "success": true
+        }
+        res.json(response)
+    })
+});
 
 router.post("/p2prequests", (req, res) => {
     let requests = req.body
